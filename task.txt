@@ -1,0 +1,60 @@
+Building sentiment lexica in a language independent way using word frequency and emoticons  
+
+
+English, Sepedi, Setswana
+
+0. Compute frequency distribution of words (like in TFIDF) in NEGATIVE, NEUTRAL AND POSITIVE tweets
+0. Take 300 words with highest frequencies in a list: stop word list
+
+--------
+is 18218
+and 3286
+to 838
+...
+---------
+
+
+1. Take 1000 tweets with ONLY NEGATIVE emoticons (Filter lines with NEGATIVE emoticons)
+2. Remove words from stop word list (which are in NEGATIVE, NEUTRAL AND POSITIVE tweets)
+3. Compute frequency distribution of remaining words 
+4. Take N most frequent remaining words as indictor words for NEGATIVE sentiment
+--> only thosen N words which have something in common 
+--> Assumpton: Because we have taken only negative tweets, the remaining text has negative words in common
+
+Negative words:
+---------
+fuck 8757
+shit 867
+sucks 767
+...
+---------
+
+
+
+Tweet1: I hate it. The schools suck :(
+Tweet2: The streets are nice :)
+Tweet3: I watched the movie. :( Movies suck. I hate it.
+
+0.)
+ 
+the 3 
+I 2
+hate 1
+
+4)
+suck 2
+hate 2
+-------
+schools 1
+watched 1
+movie 1 
+Movies 1
+
+
+--> Negative entry of sentiment lexicon is: suck
+
+
+Basic idea:
+Take most frequent content words in the tweets with NEGATIVE emoticon
+Take most frequent content words in the tweets with NEUTRAL emoticon
+Take most frequent content words in the tweets with POSITIVE emoticon
