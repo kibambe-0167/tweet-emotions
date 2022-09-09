@@ -41,7 +41,7 @@ def sortByValue( data ):
   return d
 
 # read data by
-def read():
+def read( FILENAME="emoji_tweets_sentence_tweets_categorisation" ):
   data = ""
   with open( FILENAME, "r", encoding="utf8" ) as obj: 
     data = obj.read()
@@ -97,6 +97,13 @@ def addCat( data ):
       d.append( (item[0], item[1], 'neutral') )
   return d
   
+# add category to word freq, using the
+def addCat1( data, label ):
+  d = []
+  for item in data:
+    d.append( (item[0], item[1], label) )
+  return d  
+
 # add categeory to tweet, based on the word category.
 def addCatTweet( tweets, data ):
   d = []
@@ -127,6 +134,36 @@ def addCatTweet( tweets, data ):
           d.append( f"{tweet} | there atleast is 2 positive words in a sentence of {length} **{cat}**" )
   return d
 
+# add categeory to tweet, based on the word category.
+def addCatTweet1( tweets, data ):
+  d = []
+  for tweet in tweets:
+    if len( clean( tweet ) ) > 0: 
+      freg = 0; cat = ''; l = []
+      for key, item in data.items():
+        if key in tweet and item[0] > freg:
+          cat = item[1]
+          l.append(( key, item[0], item[1] ))
+      # tweet = clean( tweet )
+      # length = len(tweet.split(' '))
+      
+      if len( l ) > 2:
+        first = l[:2][0][2]; second = l[:2][1][2]
+        # print( "here...", first,  second )
+        if first == 'neutral' and second == "neutral":
+          d.append( f"{tweet} | **{cat}**" )
+        elif l[:2][0][2] == 'positive' and l[:2][1][2] == "neutral" or l[:2][0][2] == 'neutral' and l[:2][1][2] == "positive":
+          d.append( f"{tweet} | **{cat}**" )
+        elif l[:2][0][2] == 'negative' and l[:2][1][2] == "neutral" or l[:2][0][2] == 'neutral' and l[:2][1][2] == "negative":
+          d.append( f"{tweet} | **{cat}**" )
+        elif l[:2][0][2] == 'negative' and l[:2][1][2] == "positive" or l[:2][0][2] == 'positive' and l[:2][1][2] == "negative":
+          d.append( f"{tweet} | **{cat}**" )
+        if l[:2][0][2] == 'negative' and l[:2][1][2] == "negative":
+          d.append( f"{tweet} | **{cat}**" )
+        if l[:2][0][2] == 'positive' and l[:2][1][2] == "positive":
+          d.append( f"{tweet} | **{cat}**" )
+  return d
+
 # put tweet in list by label
 # return pos, neg, nuetral labels.
 def seperateTweet( data ):
@@ -149,26 +186,94 @@ def writeData(filename, data):
   with open(filename, "w", encoding="utf-8") as obj:
     obj.writelines( data )
     
+# process negative data
+def negProcess():
+  d = {}
+  data = read("negative.txt")
+  data = clean( data )
+  # process functions.
+  data = removeStopWords( data )
+  data = getFreq( data )
+  data = sortByValue( data )
+  # data = filterMoreThanFreq( data )
+  data = addCat1( data, "negative" )
+  for item in data:
+    d[ item[0] ] = [item[1], item[2]]
+  return d
     
-    
+# process positive data
+def posProcess():
+  d = {}
+  data = read("positive.txt")
+  data = clean( data )
+  # process functions.
+  data = removeStopWords( data )
+  data = getFreq( data )
+  data = sortByValue( data )
+  # data = filterMoreThanFreq( data )
+  data = addCat1( data, "positive" )
+  for item in data:
+    d[ item[0] ] = [item[1], item[2]]
+  return d 
+
+# process neutral data
+def neuProcess():
+  d = {}
+  data = read("neutral.txt")
+  data = clean( data )
+  # process functions.
+  data = removeStopWords( data )
+  data = getFreq( data )
+  data = sortByValue( data )
+  # data = filterMoreThanFreq( data )
+  data = addCat1( data, "neutral" )
+  for item in data:
+    d[ item[0] ] = [item[1], item[2]]
+  return d
+
+# get all the words that are common in all data files.
+# and keep the word with the most freguency.
+def getCommon( neg, pos, neu ):
+  common = {}
+  for key, value in neg.items():
+    if key in pos.keys() and key in neu.keys():
+      if value[0] > pos[key][0] and value[0] > neu[key][0]:
+        common[key] = [value[0], "negative" ]
+      if pos[key][0] > value[0] and pos[key][0] > neu[key][0]:
+        common[key] = [pos[key][0], "positive" ]
+      if neu[key][0] > value[0] and neu[key][0] > pos[key][0]:
+        common[key] = [ neu[key][0], "neutral" ]
+  # add remaining left words.     
+  for key, item in neu.items():
+    if key not in common.keys():
+      common[key] = item 
+  # add remaining left words form postive.     
+  for key, item in pos.items():
+    if key not in common.keys():
+      common[key] = item 
+  # add remaining left words from negative .     
+  for key, item in neg.items():
+    if key not in common.keys():
+      common[key] = item 
+  return common
+
 
 # read data.
 tweets = readLines()#
 seperate = seperateTweet( tweets )
-# write data to files.
-writeData( "positive.text", seperate[0] )
-writeData( "negative.text", seperate[1] )
-writeData( "neutral.text", seperate[2] )
+# write data to files. 
+writeData( "positive.txt", seperate[0] )
+writeData( "negative.txt", seperate[1] )
+writeData( "neutral.txt", seperate[2] )
 # 
-data = read()
-# process functions.
-# data = clean( data )
-# data = removeStopWords( data )
-# data = getFreq( data )
-# data = sortByValue( data )
-# data = filterMoreThanFreq( data )
-# print( data )
-# data = addCat( data ) # print( data )
+negList = negProcess()
+neuList = neuProcess()
+posList = posProcess()
+data = getCommon( negList, posList, neuList )
+newTweets = addCatTweet1( tweets, data )
+for i in newTweets: print( i )
+
+
 # data = addCatTweet( tweets, data )
 # for i in data[ : 50]:
   # print( i ); print()
