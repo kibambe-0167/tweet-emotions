@@ -312,8 +312,8 @@ writeData("word_freq.txt", d )
 print("done writting word-freq to file.")
 # 
 # 
-# data = getCommon( negList, posList, neuList )
-# newTweets = addCatTweet1( tweets[ : 100 ], data )
-# writeData("result.txt", newTweets )
+data = getCommon( negList, posList, neuList )
+newTweets = addCatTweet1( tweets[ : 100 ], data )
+writeData("result.txt", newTweets )
 
 print("done..")
