@@ -48,7 +48,12 @@ def readLines():
 #
 def sortByValue( data ):
   d = sorted( data.items(), key = lambda item: item[1], reverse=True )
-  # d = collections.OrderedDict( d )
+  return d
+
+
+# sort dict with array as value 
+def sortByValueArr( data ):
+  d = sorted( data.items(), key = lambda item: item[1][0], reverse=True )
   return d
 
 # read data by
@@ -278,8 +283,8 @@ def getCommon( neg, pos, neu ):
 # turn dict into string.
 def dictToStrList( data ):
   d = []
-  for key, val in data.items():
-    d.append( f"{key}, {val[0]}, {val[1]}\n" )
+  for val in data:
+    d.append( f"{val[0]}, {val[1][0]}, {val[1][1]}\n" )
   return d
 
 
@@ -289,8 +294,7 @@ def dictToStrList( data ):
 # data = getFreq( data )
 # data = sortByValue( data )
 # writeData1("word_freq.txt", data )
-
-
+# 
 tweets = readLines()#
 seperate = seperateTweet( tweets )
 # write data to files. 
@@ -301,16 +305,15 @@ writeData( "neutral.txt", seperate[2] )
 negList = negProcess()
 neuList = neuProcess()
 posList = posProcess()
-neg = dictToStrList( negList )
-neu = dictToStrList( neuList )
-pos = dictToStrList( posList )
-d = neu + pos + neg
+d = negList | neuList | posList
+d = sortByValueArr( d )
+d = dictToStrList( d )
 writeData("word_freq.txt", d )
 print("done writting word-freq to file.")
 # 
 # 
-data = getCommon( negList, posList, neuList )
-newTweets = addCatTweet1( tweets[ : 100 ], data )
-writeData("result.txt", newTweets )
+# data = getCommon( negList, posList, neuList )
+# newTweets = addCatTweet1( tweets[ : 100 ], data )
+# writeData("result.txt", newTweets )
 
 print("done..")
