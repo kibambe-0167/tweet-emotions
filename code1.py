@@ -15,10 +15,21 @@ from nltk.tokenize import word_tokenize
 FILENAME = "emoji_tweets_sentence_tweets_categorisation.txt"
 NEGATIVE = ['fuck','bolaya','jealous','shit','bad','unpleasant', 'worse','sucks','suck']
 POSITIVE = ['love','like','best','better','lovely','amazing','great','greatest']
-NATIVE_WORD_STOP = ['ga', 'se', 'mo', 'gore', 'jo', 'be','ke', 'ka', 're']
+NATIVE_WORD_STOP = ['ga', 'se', 'mo', 'gore', 'jo', 'be','ke', 'ka', 're', 'e']
+
+# get frequency of words
+def getFreq1( data ):
+  res = {}
+  for i in data.split(" "):
+    if i in res.keys():
+      res[ i ] += 1
+    else:
+      res[i] = 1
+  return res
 
 # get frequency of words
 def getFreq( data ):
+  data = clean( data )
   res = {}
   for i in data.split(" "):
     if i in res.keys():
@@ -41,7 +52,7 @@ def sortByValue( data ):
   return d
 
 # read data by
-def read( FILENAME="emoji_tweets_sentence_tweets_categorisation" ):
+def read( FILENAME="emoji_tweets_sentence_tweets_categorisation.txt" ):
   data = ""
   with open( FILENAME, "r", encoding="utf8" ) as obj: 
     data = obj.read()
@@ -186,6 +197,13 @@ def writeData(filename, data):
   with open(filename, "w", encoding="utf-8") as obj:
     obj.writelines( data )
     
+
+# write data to text file. receive array and write data line by line.
+def writeData1(filename, data):
+  data = [ f"{d[0]}, {d[1]}\n" for d in data ]
+  with open(filename, "w", encoding="utf-8") as obj:
+    obj.writelines( data )
+    
 # process negative data
 def negProcess():
   d = {}
@@ -193,7 +211,7 @@ def negProcess():
   data = clean( data )
   # process functions.
   data = removeStopWords( data )
-  data = getFreq( data )
+  data = getFreq1( data )
   data = sortByValue( data )
   # data = filterMoreThanFreq( data )
   data = addCat1( data, "negative" )
@@ -208,7 +226,7 @@ def posProcess():
   data = clean( data )
   # process functions.
   data = removeStopWords( data )
-  data = getFreq( data )
+  data = getFreq1( data )
   data = sortByValue( data )
   # data = filterMoreThanFreq( data )
   data = addCat1( data, "positive" )
@@ -223,7 +241,7 @@ def neuProcess():
   data = clean( data )
   # process functions.
   data = removeStopWords( data )
-  data = getFreq( data )
+  data = getFreq1( data )
   data = sortByValue( data )
   # data = filterMoreThanFreq( data )
   data = addCat1( data, "neutral" )
@@ -257,24 +275,42 @@ def getCommon( neg, pos, neu ):
       common[key] = item 
   return common
 
+# turn dict into string.
+def dictToStrList( data ):
+  d = []
+  for key, val in data.items():
+    d.append( f"{key}, {val[0]}, {val[1]}\n" )
+  return d
+
+
 
 # read data.
+# data = read()
+# data = getFreq( data )
+# data = sortByValue( data )
+# writeData1("word_freq.txt", data )
+
+
 tweets = readLines()#
 seperate = seperateTweet( tweets )
 # write data to files. 
 writeData( "positive.txt", seperate[0] )
 writeData( "negative.txt", seperate[1] )
 writeData( "neutral.txt", seperate[2] )
-# 
+# # 
 negList = negProcess()
 neuList = neuProcess()
 posList = posProcess()
+neg = dictToStrList( negList )
+neu = dictToStrList( neuList )
+pos = dictToStrList( posList )
+d = neu + pos + neg
+writeData("word_freq.txt", d )
+print("done writting word-freq to file.")
+# 
+# 
 data = getCommon( negList, posList, neuList )
-newTweets = addCatTweet1( tweets, data )
-for i in newTweets: print( i )
+newTweets = addCatTweet1( tweets[ : 100 ], data )
+writeData("result.txt", newTweets )
 
-
-# data = addCatTweet( tweets, data )
-# for i in data[ : 50]:
-  # print( i ); print()
 print("done..")
