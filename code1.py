@@ -67,6 +67,7 @@ def read( FILENAME="emoji_tweets_sentence_tweets_categorisation.txt" ):
 # clean the data
 def clean( data ):
   # exceot this chars.
+  data = ' '.join( [ a for a in [i for i in data.split(' ')] if not re.search("^http", a) ] )
   data = re.sub("[^\sa-z0-9]", "", data.lower() )
   data = re.sub("neutral", "", data.lower() )
   data = re.sub("positive", "", data.lower() )
