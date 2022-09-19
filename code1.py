@@ -78,6 +78,7 @@ def clean( data ):
 # clean the data without removing data
 def clean1( data ):
   # exceot this chars.
+  data = ' '.join( [ a for a in [i for i in data.split(' ')] if not re.search("^http", a) ] )
   data = re.sub("[^\sa-z0-9]", "", data.lower() )
   data = ' '.join( data.split() )
   return data
@@ -168,34 +169,31 @@ def addCatTweet1( tweets, data ):
         first = l[:2][0][2]; second = l[:2][1][2]
         # print( "here...", first,  second )
         if first == 'neutral' and second == "neutral":
-          d.append( f"{tweet} | **{cat}**" )
+          d.append( f"{tweet} **{cat}**\n" )
         elif l[:2][0][2] == 'positive' and l[:2][1][2] == "neutral" or l[:2][0][2] == 'neutral' and l[:2][1][2] == "positive":
-          d.append( f"{tweet} | **{cat}**" )
+          d.append( f"{tweet} **{cat}**\n" )
         elif l[:2][0][2] == 'negative' and l[:2][1][2] == "neutral" or l[:2][0][2] == 'neutral' and l[:2][1][2] == "negative":
-          d.append( f"{tweet} | **{cat}**" )
+          d.append( f"{tweet} **{cat}**\n" )
         elif l[:2][0][2] == 'negative' and l[:2][1][2] == "positive" or l[:2][0][2] == 'positive' and l[:2][1][2] == "negative":
-          d.append( f"{tweet} | **{cat}**" )
+          d.append( f"{tweet} **{cat}**\n" )
         if l[:2][0][2] == 'negative' and l[:2][1][2] == "negative":
-          d.append( f"{tweet} | **{cat}**" )
+          d.append( f"{tweet} **{cat}**\n" )
         if l[:2][0][2] == 'positive' and l[:2][1][2] == "positive":
-          d.append( f"{tweet} | **{cat}**" )
+          d.append( f"{tweet} **{cat}**\n" )
   return d
 
 # put tweet in list by label
 # return pos, neg, nuetral labels.
 def seperateTweet( data ):
-  pos = []
-  neg = []
-  neu = []
+  pos = []; neg = []; neu = []
   for tweet in data:
-    # tweetClean = clean1( tweet.lower() )
-    # print( tweetClean )
+    tweet = clean1( tweet.lower() )
     if re.search("neutral$", tweet ):
-      neu.append( tweet )
+      neu.append( f"{tweet}\n" )
     elif re.search("negative$", tweet ):
-      neg.append( tweet )
+      neg.append( f"{tweet}\n" )
     elif re.search("positive$", tweet ):
-      pos.append( tweet )
+      pos.append( f"{tweet}\n" )
   return [pos, neg, neu]
       
 # write data to text file. receive array and write data line by line.
@@ -313,8 +311,12 @@ writeData("word_freq.txt", d )
 print("done writting word-freq to file.")
 # 
 # 
+print("writting result to file.")
 data = getCommon( negList, posList, neuList )
-newTweets = addCatTweet1( tweets[ : 100 ], data )
+# if wants to remove label, change from clean1() to clean()
+tweets_clean = [ clean1(tweet) for tweet in tweets[ : 50] ]
+# please change the number in [ : 100 ] to get all tweets
+newTweets = addCatTweet1( tweets_clean[ : 100 ], data )
 writeData("result.txt", newTweets )
 
 print("done..")
