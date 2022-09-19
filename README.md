@@ -2,7 +2,7 @@
 set emotions to tweet, based on a predifined algorithm
 
 # install package and make venv.
-python -m venv venv
+python3 -m venv venv
 
 venv\Script\active
 
