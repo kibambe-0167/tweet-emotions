@@ -50,7 +50,6 @@ def sortByValue( data ):
   d = sorted( data.items(), key = lambda item: item[1], reverse=True )
   return d
 
-
 # sort dict with array as value 
 def sortByValueArr( data ):
   d = sorted( data.items(), key = lambda item: item[1][0], reverse=True )
