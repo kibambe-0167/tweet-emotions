@@ -1,9 +1,5 @@
-# read line.
-# get freg.  
-# remove stop words from the line. 
-# tell where the words comes from.
-# word, freg, cat.
-# check if
+# result are in cleanAllData
+# 
 import re
 import collections
 import nltk
@@ -38,9 +34,6 @@ data = [ f"{ cleanWithoutLabel( getLabel(line)[0] ) }, { cleanWithoutLabel( getL
 # for line in data[ : 10]: print( line )
 
 
-# t = "@Saboshego6 Eeh Moruti waka,  o suitile maan.  👌🏾. Letšatši le lebotse ,positive"
-# print( getLabel(t) )
-# 
 # write data to file.
 writeLines( "allTweetsClean.txt", data )
 
