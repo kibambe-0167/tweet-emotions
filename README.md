@@ -7,3 +7,5 @@ python3 -m venv venv
 venv\Script\active
 
 python -m pip install -r requirement.txt
+
+

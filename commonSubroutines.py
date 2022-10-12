@@ -21,6 +21,11 @@ def writeLines(filename, data):
   data = [ f"{d}\n" for d in data ]
   with open(filename, "w", encoding="utf-8") as obj:
     obj.writelines( data )
+    
+# write without considering lines
+def write(filename, data):
+  with open( filename, "w", encoding="utf-8") as obj:
+    obj.write( data );
         
 
 # clean the data without removing data
